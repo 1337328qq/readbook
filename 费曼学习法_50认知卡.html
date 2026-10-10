@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>《费曼学习法（用输出倒逼输入）》· 50 张知识卡片</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
+<style>
+:root{
+  --c-q:#3b82f6; --c-r:#22c55e; --c-recite:#f97316; --c-review:#ec4899;
+  --ink:#23272e; --sub:#6b7280; --line:#e8e8ea; --bg:#f6f7f9;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;}
+header{padding:22px 26px 10px;}
+h1{font-family:"LXGW WenKai",serif;font-size:24px;margin:0 0 4px;}
+.sub{color:var(--sub);font-size:13px;margin:0;}
+.controls{position:sticky;top:0;z-index:20;background:var(--bg);padding:12px 26px;border-bottom:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.controls input{padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;min-width:220px;}
+.chip{padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;font-size:13px;transition:.15s;}
+.chip:hover{border-color:#bbb;}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;padding:22px 26px 60px;}
+.card{aspect-ratio:3/4;background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);
+  display:flex;flex-direction:column;overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.12);}
+.card .head{padding:14px 16px 10px;border-bottom:1px solid var(--line);}
+.card .head .t{font-family:"LXGW WenKai",serif;font-size:18px;line-height:1.3;}
+.card .head .s{font-size:12px;color:var(--sub);margin-top:4px;}
+.card .body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.band{padding:8px 16px;border-left:5px solid #ccc;line-height:1.75;font-size:13px;}
+.band .lab{font-size:11px;font-weight:700;letter-spacing:.5px;opacity:.85;display:block;margin-bottom:2px;}
+.band.q{border-color:var(--c-q);} .band.q .lab{color:var(--c-q);}
+.band.r{border-color:var(--c-r);} .band.r .lab{color:var(--c-r);}
+.band.recite{border-color:var(--c-recite);} .band.recite .lab{color:var(--c-recite);}
+.band.review{border-color:var(--c-review);background:#fdf2f8;} .band.review .lab{color:var(--c-review);}
+.band .txt{white-space:normal;}
+.band.review .txt{color:var(--sub);font-style:italic;}
+
+/* 弹层 */
+.overlay{position:fixed;inset:0;background:rgba(20,22,28,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.overlay.show{display:flex;}
+.modal{aspect-ratio:3/4;max-height:88vh;width:auto;max-width:92vw;background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.3);
+  display:flex;flex-direction:column;overflow:hidden;}
+.modal .head{padding:18px 22px 12px;border-bottom:1px solid var(--line);position:relative;}
+.modal .head .t{font-family:"LXGW WenKai",serif;font-size:22px;}
+.modal .head .s{font-size:13px;color:var(--sub);margin-top:6px;}
+.modal .head .meta{font-size:12px;color:var(--sub);margin-top:6px;}
+.modal .body{flex:1;overflow:auto;display:flex;flex-direction:column;}
+.modal .band{padding:12px 22px;font-size:14px;}
+.modal .close{position:absolute;top:14px;right:16px;cursor:pointer;border:none;background:transparent;font-size:22px;color:var(--sub);}
+.count{font-size:12px;color:var(--sub);margin-left:auto;}
+</style>
+</head>
+<body>
+<header>
+<h1>《费曼学习法（用输出倒逼输入）》· 50 张知识卡片</h1>
+<p class="sub">SQ3R 拆书法 ｜ 参考微信文章《一定要大量读书，5 分钟用 Workbuddy 把书拆成 50 张知识卡片》｜ 点击卡片放大</p>
+</header>
+<div class="controls">
+  <input id="search" placeholder="搜索关键词（卡名/定义/原文…）">
+  <span class="chip active" data-m="全部">全部</span>
+  <span class="chip" data-m="目标">目标</span><span class="chip" data-m="理解">理解</span><span class="chip" data-m="输出">输出</span><span class="chip" data-m="回顾">回顾</span><span class="chip" data-m="简化">简化</span><span class="chip" data-m="心法">心法</span>
+  <span class="count" id="count"></span>
+</div>
+<div class="wall" id="wall"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const CARDS = [{"module": "目标", "title": "SMART 原则验证目标", "subtitle": "用五个字母一眼判断目标是否正确", "q": "我定下的学习目标，真的是“正确”的吗？怎样一眼看出它是伪目标？", "r": "“著名的‘SMART原则’提供了一个简单明了的判断标准：S明确具体 / M可衡量 / A可达 / R有成就感 / T有时间限制。”(第5章)", "recite": "用 SMART 给目标打分：不具体、不可衡量、超能力、无期限、无成就感——任一不过即伪目标，赶紧换。", "review": ["SMART 只验“可行性”，不验“价值性”——错误的方向 SMART 也能满分", "生活化小目标（如学会煎蛋）不必走全套 SMART"], "source": "第5章", "id": 1}, {"module": "目标", "title": "目标的全面性原则", "subtitle": "目标要匹配阅历与全局，而非为学而学", "q": "我定的学习目标，有没有脱离自己的实际处境和全局？", "r": "“制定目标时要有全局和整体观念……要能匹配你的阅历、经验和过去的知识积累，体现你一段时期内的任务。”(第6章)", "recite": "目标不是孤岛。先问“它和我已有的积累、近期任务有什么关系”，匹配得上才值得学。", "review": ["纯粹兴趣型轻量学习可不必强求全局性", "全局观过强易拖延，先用小目标跑通再扩面"], "source": "第6章", "id": 2}, {"module": "目标", "title": "目标的重点性原则", "subtitle": "一本书千头万绪，只攻最关键的那个点", "q": "这本书/这门课信息爆炸，我该把有限精力压在哪一两个点？", "r": "“制定的目标要有侧重点……必须明确学习的重心，针对自己的某一项不足，切中要害。”(第6章)", "recite": "别贪全。先找出“最痛的那个不足”，把 80% 精力砸上去，其余眼熟即可。", "review": ["通识扫盲阶段可先广后深", "重点定错会错杀其他内容，需回顾时修正"], "source": "第6章", "id": 3}, {"module": "目标", "title": "目标的挑战性原则", "subtitle": "目标要有难度，激发潜能而非轻易可得", "q": "我的目标是不是太“舒服”了，一点挑战都没有？", "r": "“制定的目标要具有挑战性……能激发求知欲、挖掘潜能；不能人为调低难度，否则养成浅尝辄止的坏习惯。”(第6章)", "recite": "目标要“跳一跳才够得着”。一遇困难就降难度，等于主动废掉自己的成长。", "review": ["挑战性须与挑战者的当前能力匹配，新手不宜过度", "和可行性原则辩证统一，超能力即假目标"], "source": "第6章", "id": 4}, {"module": "目标", "title": "目标的可行性原则", "subtitle": "挑战之外，必须落在能力可达范围", "q": "这个目标再有挑战，我真的“够得着”吗？", "r": "“制定的目标要切实可行……既要有挑战性，也不能超出能力范围；经过一定努力能实现，才能激发潜能。”(第6章)", "recite": "可行=努力后可及。历史专业强求两月学通天文宇宙常数，就是不可行。", "review": ["可行性随时间变化，旧知识补上后旧不可行会变可行", "可行性低时先降级补基础，而非硬刚"], "source": "第6章", "id": 5}, {"module": "目标", "title": "目标的可调性原则", "subtitle": "留备用方案，随环境调整方向", "q": "如果外部条件突变，我的目标还能转弯吗？", "r": "“目标要具有一定的可调性……随环境变化做必要调整，实施中留有余地，准备好多种备用计划。”(第6章)", "recite": "别把目标焊死。准备 Plan B，环境一变立刻切换，始终掌握主动。", "review": ["可调≠随便改，频繁变向是逃避", "调的是路径与期限，核心意图尽量不动"], "source": "第6章", "id": 6}, {"module": "目标", "title": "与目标的“强联系”", "subtitle": "在计划与目标间打通血脉，避免空中楼阁", "q": "我的学习计划，真的和目标“血脉相连”吗，还是两张皮？", "r": "“在费曼学习法第一步和第二步之间插入必要环节：挖掘你和目标之间的‘强联系’……保证目标不是空中楼阁。”(第5章)", "recite": "定目标后先问“为什么非它不可、计划匹配度几分”，把计划和终点用反馈绑在一起。", "review": ["强联系过强会变成执念，错目标要坚持", "轻量兴趣学习不必做正式强联系论证"], "source": "第5章", "id": 7}, {"module": "目标", "title": "抓住黄金时间聚焦", "subtitle": "在黄金窗口内心无旁骛，放弃“可做非必须”", "q": "当下这个最佳学习窗口，我有没有被一堆“可做”的事分了心？", "r": "“善于抓住学习的黄金时间，将全部精力聚焦于选定目标……摆脱‘可以做’但并非‘必须做’的事。”(第4章)", "recite": "兴趣窗口有限（一两年）。窗口一开，砍掉所有“可做非必须”，all-in 这一件。", "review": ["黄金时间因人而异，需自我观察记录", "长期单一聚焦伤身心，需节奏休息"], "source": "第4章", "id": 8}, {"module": "理解", "title": "归类对比筛假知识", "subtitle": "做饭先摘菜洗菜，学习先归类对比去伪", "q": "面对海量来源，我怎么把“真知识”挑出来、把“假知识”踢出去？", "r": "“用对比的方式挑选和分辨知识……摘掉重复和不可靠的信息，把真正值得学习的知识找出来，放入自己的学习系统。”(第7章)", "recite": "像摘菜：先按来源归类对比，删重复、删不可靠，只留经得起验证的进系统。", "review": ["对比需至少 2–3 个可靠来源，单一来源易偏", "权威来源也含水，仍需独立审视"], "source": "第7章", "id": 9}, {"module": "理解", "title": "人生 90% 是假知识", "subtitle": "警惕“强意志”标签包裹的舒适陷阱", "q": "我深信不疑的某些“常识”，会不会其实是假知识？", "r": "“我们在自己一生中学到的 90% 都是假知识……假知识具有刺激意志的特点，像打了一针兴奋剂，却改变不了你的行为。”(第7章)", "recite": "凡让你“听了一激灵、过后毫无改变”的知识，多半是假知识。用行为验证，不靠快感。", "review": ["统计性说法，用于警醒而非精确比例", "某些“假知识”在局部场景仍可用，需辨边界"], "source": "第7章", "id": 10}, {"module": "理解", "title": "屏蔽来源不确定的知识", "subtitle": "来源不明坚决屏蔽，权威也独立审", "q": "这条信息出处是公众号/道听途说，我该不该信？", "r": "“对知识来源的判断尤其重要……来源不确定的知识要坚决屏蔽；专业权威来源也要独立思考和谨慎采纳。”(第7章)", "recite": "先查出处再决定是否进脑。来源不明直接屏蔽；权威也别盲从，独立审一遍。", "review": ["应急场景下来源次要，先记下后验证", "完全拒绝单一来源可能漏掉前沿未审观点"], "source": "第7章", "id": 11}, {"module": "理解", "title": "思维导图让知识可视化", "subtitle": "用“直升机视野”一眼看清知识骨架", "q": "知识点太散我抓不住重点，怎么让它们“立”起来？", "r": "“思维导图最大作用是横向拓展……以视觉表征刺激大脑图像化思考，如同在城市中拥有‘直升机视野’，看到关键部分。”(第8章)", "recite": "一张图胜过千言。把知识画成图，大脑从碎片拼接中解脱，直取整体与重点。", "review": ["过度美化导图会本末倒置", "纯线性简知识可不必画图"], "source": "第8章", "id": 12}, {"module": "理解", "title": "双重编码理论", "subtitle": "文字+图像同时编码，记忆更牢", "q": "为什么我看视频学比啃书效果好那么多？", "r": "“大脑存在两种独立又联系的信息加工系统：语言文字与表象语言。对信息同时两种加工等于双重编码，记忆更牢。”(第8章)", "recite": "学任何知识都配一张图/一段视频。文字+图像双通道编码，长时记忆稳稳入账。", "review": ["抽象纯逻辑知识难找对应图像，需自创类比", "双重编码不等于堆图，需与语义对应"], "source": "第8章", "id": 13}, {"module": "理解", "title": "构建心理表象", "subtitle": "把抽象知识翻译成脑中画面", "q": "这个抽象概念我死记硬背记不住，怎么让它“看见”？", "r": "“心理表象指知识以形象化方式在大脑形成的抽象概念……精练语言+可图像化。不熟悉的知识仅用文字让人备感艰难。”(第8章)", "recite": "给知识造画面：水波讲波粒二象性、齿轮讲变速箱。画面一帧，理解即达。", "review": ["过度依赖表象可能忽略严谨定义", "表象需经得起原意核对，否则误导"], "source": "第8章", "id": 14}, {"module": "理解", "title": "长时记忆是理解终点", "subtitle": "知识只有变成长时记忆才算真懂", "q": "我“好像懂了”，怎么确认它是真懂而非薛定谔状态？", "r": "“我们想要学的知识最后都要转化为‘长时记忆’才算成功……双重编码成功后信息被转移到长时记忆，便完成对知识的理解。”(第8章)", "recite": "懂的标尺=能调出、能复述、能长期存。停在短时记忆的“懂”是假懂。", "review": ["长时记忆也需复习防衰减", "某些一次性知识不必追求长时"], "source": "第8章", "id": 15}, {"module": "理解", "title": "系统化=四通八达交通网", "subtitle": "把知识安放进彼此连通的网络", "q": "我学的点是散的，怎么织成一张能跑车的网？", "r": "“构建知识系统就像修建四通八达的交通网络……路有出发点与终点，有交汇与中枢，知识是网中运输的养料，运转有序。”(第11章)", "recite": "别堆知识点，建交通网：每个知识有来处、去处、交汇点。网通了，知识才活。", "review": ["建网初期慢，需忍耐", "网太杂易信息过载，要定期修剪"], "source": "第11章", "id": 16}, {"module": "理解", "title": "水平·发散·收敛三工具", "subtitle": "归类对比 / 联想发散 / 结构收敛", "q": "面对一个知识，我用哪三种思维工具把它吃透？", "r": "“水平：归类对比，设对立角度验证；发散：思维导图联想建联系；收敛：把零散知识聚集盖房，结构化成自己的框架。”(第11章)", "recite": "三件套：先水平对比找破绽，再发散联想建联系，最后收敛成自己的结构。", "review": ["三工具需配合，单用易偏", "发散过度会跑题，需收敛收口"], "source": "第11章", "id": 17}, {"module": "输出", "title": "以教代学（核心）", "subtitle": "讲不清=没真懂，输出即学习", "q": "我能不能把一个概念，用一两句话让外行听懂？", "r": "“如果你不能向其他人简单地解释一件事，那么你就还没有真正弄懂它……假设外行站在面前，用他听得懂的语言解释。”(第12章)", "recite": "检验懂不懂的唯一标准：讲给外行听。讲不清，就是还有坑没填。", "review": ["对零基础外行也需适度铺垫背景", "讲得清≠用得对，仍需实践验证"], "source": "第12章", "id": 18}, {"module": "输出", "title": "讲给 7 岁小孩听", "subtitle": "用类比把高深知识拉到孩童水平", "q": "这个高深术语，我能让一个 7 岁孩子听懂吗？", "r": "“让听者在他的能力和已知范围内迅速理解，是输出基础原则……你懂得什么不重要，能让任何人听明白才代表学透。”(第12章)", "recite": "试着用水波讲波粒二象性、用自行车讲变速箱。能把小孩讲懂，你才真通。", "review": ["过度简化可能丢失严谨性", "儿童类比需对应其生活经验，否则无效"], "source": "第12章", "id": 19}, {"module": "输出", "title": "输出五原则（递进）", "subtitle": "简洁 / 精准 / 有深度 / 加己见 / 致用", "q": "我输出知识时，有没有做到“简洁又有深度还带自己的理解”？", "r": "“输出五原则：语言简洁易懂；精准无歧义；讲出一定深度；加上自己的理解；最终为知识找到现实出口。”(第15章)", "recite": "好输出=大白话讲清+零歧义+有深度+带己见+能落地。五者递进，缺一不可。", "review": ["入门阶段先求简洁准确，深度可渐进", "为深度而深度易显得掉书袋"], "source": "第15章", "id": 20}, {"module": "输出", "title": "场景模拟四角色", "subtitle": "解说者 / 受询者 / 传授者 / 质疑者", "q": "我只在“安静听讲”场景练过，换面试/辩论场景还行吗？", "r": "“模拟解说者（演讲）、受询者（面试）、传授者（讲课）、质疑者（辩论）四种思维，逼真模拟场景刺激学习记忆。”(第13章)", "recite": "一个知识练四遍：当演讲者、当被考者、当老师、当抬杠者。四面夹击，想不牢都难。", "review": ["四场景需对应真实使用场景选练", "纯记忆型知识不必全四角色"], "source": "第13章", "id": 21}, {"module": "输出", "title": "第一次复述三阶段", "subtitle": "凭印象讲 → 提问题 → 加己见", "q": "合上书，我能不看书把核心讲一遍吗？", "r": "“第一次复述三阶段：凭印象复述深刻部分；复述中提出问题与自己旧知对比；加入自己观点，实现新旧衔接。”(第10章)", "recite": "合书对自己讲三遍：先凭印象、再提疑问、最后塞进自己的看法。讲通即初步内化。", "review": ["第一次可对自己讲，容错高", "仅背诵不算复述，需理解重组"], "source": "第10章", "id": 22}, {"module": "输出", "title": "第二次复述·分组讨论", "subtitle": "真实场景输出，从异议中查漏", "q": "我敢不敢把自己的理解摆到一群人面前接受挑刺？", "r": "“第二次复述进入真实传授场景，向多人阐述……从听者收取中肯评价和异议，差异意味着问题，解决问题即获智慧。”(第14章)", "recite": "找几个人讲一遍，专听反对意见。被怼到的地方，就是你没懂的地方。", "review": ["听众需有基本认知，纯外行反馈价值低", "怕丢脸会回避，需刻意练习暴露"], "source": "第14章", "id": 23}, {"module": "输出", "title": "为知识注入灵魂", "subtitle": "用自己的话+现实落地，不复读机", "q": "我讲知识时，是在“打印”还是在“活学”？", "r": "“为知识注入灵魂：用自己语言表述；结合现实阐述；表达个人分析与见解。死读书只是机械背诵，无灵魂。”(第14章)", "recite": "三件套注魂：自己的话、现实的例、个人的见。缺一样，知识就是枯叶。", "review": ["个人见解需谨慎，错见会误导他人", "初学者见解浅，先求准确再求独到"], "source": "第14章", "id": 24}, {"module": "输出", "title": "输出倒逼输入", "subtitle": "教授别人时大脑自动启动查漏", "q": "我学了不少却记不住，能不能用“教”来逼自己记牢？", "r": "“输出知识时大脑自动启动检查程序，看哪儿有问题、哪儿不明白，发现阻塞，打通已学会的内容与自身体系。”(第13章)", "recite": "要记得牢，就假装要教别人。大脑会紧急动员检索，逼你把漏洞补上。", "review": ["假装教学需真较真，敷衍无效", "无听众时可对镜/录音频模拟"], "source": "第13章", "id": 25}, {"module": "输出", "title": "主动学习改变命运", "subtitle": "输出式主动学远胜被动输入", "q": "我是在“主动征服知识”还是“等知识垂幸”？", "r": "“以教代学的输出属于主动学习……顶级企业家很早建立主动学习习惯，有强烈输出欲望；被动学习者如今大多籍籍无名。”(第13章)", "recite": "主动输出=逼大脑查漏+组织语言。高质量的主动学习，才真正改变命运。", "review": ["主动需自律，初期很累", "完全无输出纯输入适合启蒙扫盲"], "source": "第13章", "id": 26}, {"module": "回顾", "title": "盲维", "subtitle": "你没看到的角落，才是没懂的地方", "q": "我以为懂了，会不会只是摸到了皮毛，下面全是盲维？", "r": "“学完一个知识后总以为懂了，可只摸到皮毛。皮毛之下大量未知用一个词形容就是‘盲维’……消除盲维即怀疑与深度探索。”(第16章)", "recite": "懂=看见的少、盲维小。输出卡壳处，就是盲维暴露处。主动探索才能消盲。", "review": ["盲维永远存在，追求“全懂”不现实", "过度纠结盲维会拖延输出"], "source": "第16章", "id": 27}, {"module": "回顾", "title": "重新对比数据和事实", "subtitle": "讲岔了先查自己知识库，不自辩", "q": "别人听不懂时，我第一反应是“你没听懂”还是“我讲错了”？", "r": "“遇到输出问题，第一件事不是否定知识或强辩，而是重新对比已掌握的数据和事实，列出清单检查遗漏与错误。”(第16章)", "recite": "被质疑先别杠。回查自己的知识库：漏了啥、记错啥、逻辑通不通。自圆其说才算过。", "review": ["确有知识本身错误时，不盲目自责", "对比需有原始资料，凭记忆易二次错"], "source": "第16章", "id": 28}, {"module": "回顾", "title": "怀疑与探索", "subtitle": "怀疑一切定论，探索本质", "q": "连权威定论我都敢怀疑、去探本质吗？", "r": "“回顾第一步：确保数据事实准确科学；对未知保持强烈好奇心，怀疑一切定论；探索本质和背后的问题，而非仅记住内容。”(第19章)", "recite": "回顾先开“怀疑开关”：数据准不准？权威对不对？本质是什么？只记内容=没学。", "review": ["怀疑需有依据，为杠而杠伤效率", "基础事实可先信后用，再逐步验证"], "source": "第19章", "id": 29}, {"module": "回顾", "title": "寻找反证（四类否定证据）", "subtitle": "相反数据 / 逻辑漏洞 / 过时 / 相反权威", "q": "我能找到推翻这个知识的四类反证吗？", "r": "“重视否定式证据：相反的数据；逻辑漏洞；过时的知识；相反的权威观点。不能仅有正面信息，要有充分负面信息。”(第17章)", "recite": "找反证四件套：反数据、逻辑洞、已过时、反权威。四面一查，倾向性现形。", "review": ["反证也需可靠，伪反证更危险", "部分领域暂无反证，不等于绝对正确"], "source": "第17章", "id": 30}, {"module": "回顾", "title": "争议是深度学习入口", "subtitle": "向下解决争议，拾起皇冠上的宝石", "q": "遇到有争议的知识点，我是跳过还是钻进去？", "r": "“遇到争议两种处理：向上回避（浅学习）或向下解决（深度学习）。你不喜欢、不认可的东西，那才是知识皇冠上的宝石。”(第17章)", "recite": "碰到争议别绕。钻进去和人对谈，争议点=难点=突破口=真智慧所在。", "review": ["争议可能永无定论，需设止损", "伪争议（语义之争）不值得深钻"], "source": "第17章", "id": 31}, {"module": "回顾", "title": "没有“最可靠”结论", "subtitle": "所有结论都有局限，保持常新", "q": "我把某结论当金科玉律，它真有那么绝对吗？", "r": "“别相信任何一种学术结论，哪怕最权威。知识是动态变化的，我们解构、论证、怀疑、反思更新它，使其保持常新。”(第17章)", "recite": "任何结论都有时空局限。教材也要“信但知局限”，留怀疑才能创造新知。", "review": ["基础操作知识可先当确定用", "全疑会导致无法行动，需分层"], "source": "第17章", "id": 32}, {"module": "回顾", "title": "原理性思维", "subtitle": "搞懂背后原理，降低记忆依赖", "q": "我只记了结论，背后的原理搞懂了吗？", "r": "“留意知识背后的逻辑、根源、因果。拥有‘原理性思维’……掌握原理能大幅降低对记忆量的依赖，举一反三。”(第18章)", "recite": "复盘多问“为什么这样”。懂原理=少背也能用、能迁移。原理比知识本身更值钱。", "review": ["部分纯事实知识无深层原理可挖", "原理需以事实支撑，空谈原理易玄学"], "source": "第18章", "id": 33}, {"module": "回顾", "title": "内容留存率 ≥ 90%", "subtitle": "留存率达标才是高质量学习", "q": "我学完能留住多少？是“假学习”还是真高效？", "r": "“只有内容留存率达到 90% 以上，才算真正高质量学习……记住比例+理解比例都不低于 90%，费曼步骤运用好可提升到 90% 以上。”(第18章)", "recite": "学习看“留住多少”不看“学了多少”。用费曼五步把留存率拉到 90%，才是真学。", "review": ["90% 是理想值，非硬性及格线", "部分知识只需留存关键点即可"], "source": "第18章", "id": 34}, {"module": "简化", "title": "打开“重要性开关”", "subtitle": "讲完一遍，自然分清轻重", "q": "一堆知识涌进来，我怎么分清哪块最该吸收？", "r": "“打开知识‘重要性开关’：哪些重要、一般、不重要，列优先级全力吸收重要的。通过三次复述可打开此开关。”(第20章)", "recite": "讲一遍就清醒了：重要的留下、不重要的弃。给知识排座次，先吃核心。", "review": ["重要性随目标变，需动态重排", "初学难判重要，需输出后回看"], "source": "第20章", "id": 35}, {"module": "简化", "title": "复杂归简单", "subtitle": "一团乱麻找线头，拽出核心", "q": "这知识太复杂，我能不能三句话讲明白核心？", "r": "“所有复杂体系都有简单核心逻辑，像乱麻有总线头。找到核心往外一拽，复杂便化解。不能三两句话讲明即一知半解。”(第20章)", "recite": "抓总线头：估值低的股票为何还跌？核心是“吸收分析出了错”。核心一拽，乱麻开。", "review": ["过度简化会丢关键约束", "核心需经输出验证是否真为核心"], "source": "第20章", "id": 36}, {"module": "简化", "title": "知识吸收五能力", "subtitle": "获取 / 简化 / 吸纳 / 转化 / 创新", "q": "我到底差在“吸收”的哪一步？", "r": "“知识吸收能力=获取、简化、吸纳、转化、创新知识的能力。深嵌费曼各步骤，帮我们锁定、理解、消化、创造知识。”(第20章)", "recite": "吸收五关：拿到→提纯→存牢→融入旧知→长出新知。卡在哪关，补哪关。", "review": ["五能力需协同，单强不全强", "创新是高阶，初学先稳前四关"], "source": "第20章", "id": 37}, {"module": "简化", "title": "纵向拓展", "subtitle": "一点集中突破，举一反三", "q": "我想深学，是该横向铺开还是纵向打透？", "r": "“实现纵向拓展：表面‘无用’的知识最后都能联系。不需横向掌握所有点，只需对一两个点集中突破，便能举一反三。”(第21章)", "recite": "别铺摊子。选“关陇集团对唐建立的影响”一个点打透，绳子一带，全唐史通。", "review": ["完全无横向易成井蛙", "纵向需选对“牵一发动全身”的点"], "source": "第21章", "id": 38}, {"module": "简化", "title": "绿灯思维", "subtitle": "区分“我”与“我的想法”，开放倾听", "q": "别人一反对，我第一反应是防卫还是倾听？", "r": "“绿灯思维：事无禁止均可为，遇新观点耐心倾听自我反省汲取价值。要区分‘我’与‘我的想法’，而非红灯式自我中心防卫。”(第21章)", "recite": "听到反对先别炸。把“我”和“我的想法”分开，绿灯常亮，视野才不受限。", "review": ["绿灯≠照单全收，仍需判断", "面对恶意攻击不必强开绿灯"], "source": "第21章", "id": 39}, {"module": "简化", "title": "以慢为快", "subtitle": "慢就是快，快餐式学习最骗人", "q": "我是不是在追求“三分钟学会”的假快？", "r": "“真正高效是融会贯通的结果，须习惯‘以慢为快’……专注一个对象学精学通，100%运用。快餐式学习（三分钟学会）费曼坚决反对。”(第21章)", "recite": "慢=把阻塞打通。做张结构图花三天，换来真懂。求快只学个“好像会”。", "review": ["时间极紧时可用快餐打底再补深", "慢需有产出节奏，纯慢易拖延"], "source": "第21章", "id": 40}, {"module": "简化", "title": "刻意练习精进", "subtitle": "提升认知深度，弃细枝末节", "q": "我练了很多，为什么还是新手水平？", "r": "“精进需‘刻意练习’：提升认知视野与深度，放弃细枝末节考据，强化问题本质与关键领域研究。新手看棋子，高手看棋局。”(第21章)", "recite": "别死磕细节。练“看棋局”的认知深度：抓本质、持续练、从兴趣切入。", "review": ["基础期细节也重要，不可全弃", "刻意需反馈，无反馈练偏"], "source": "第21章", "id": 41}, {"module": "简化", "title": "在线学习简化六则", "subtitle": "以效果/实践/联想/去重/工作/成长为前提", "q": "我在网上乱学一堆，怎么简化才不白费？", "r": "“在线学习简化：以实际效果为前提；以实践应用为目的；重联想内容；避不同平台重复；结合工作；重视知识成长性。”(第21章)", "recite": "网上学=以用为先、结合工作、去重、重联想、看成长。不然只是信息零食。", "review": ["休闲式浏览可不必严格简化", "平台算法易投喂重复，需主动去重"], "source": "第21章", "id": 42}, {"module": "简化", "title": "好东西太多会消化不良", "subtitle": "不简化=贪多嚼不烂，永远门外", "q": "我读了好多书，为什么还是“像从没学过”？", "r": "“好东西太多会消化不良。简化即分解出核心、条理化逻辑化整理好再吸收。不能梳理得通俗三两句讲明，就是一知半解。”(第20章)", "recite": "学完不简化=堆原料。洗菜去烂叶、留净料、摆整齐，才能下锅吸收。", "review": ["广博阅读本身有价值，需配简化", "消化差先减输入量再加工程度"], "source": "第20章", "id": 43}, {"module": "心法", "title": "学习的本质=输出", "subtitle": "无法对外输出的学习不算学习", "q": "我学了这么多，能在现实里“输出”并用上吗？", "r": "“学习和应用互为一体，无法对外输出的学习就不能称为学习……要拥有出色的应用知识能力，能够输出、创造知识并改造世界。”(前言)", "recite": "学=能输出。倒背如流却用不上，等于没学。以输出倒逼，才是真学习。", "review": ["纯陶冶类阅读可不以输出为硬指标", "输出形式多元，不限于讲授"], "source": "前言", "id": 44}, {"module": "心法", "title": "内容留存率金字塔", "subtitle": "听讲 5% → 教别人 90%", "q": "我用的是留存率 5% 的方法，还是 90% 的方法？", "r": "“听、看、阅读是被动学习，内容留存率偏低；只有以讨论、输出为主的方法，才能用较少代价获得较高留存率。”(第12/18章)", "recite": "被动学（听读看）留存个位数；主动教/用/练留存冲 90%。选方法先看它在金字塔哪层。", "review": ["具体百分比为经典研究近似值的引用", "不同人留存率有差异，趋势成立"], "source": "第12/18章", "id": 45}, {"module": "心法", "title": "费曼五条重要建议", "subtitle": "笔记 / 整理 / 结构化 / 输出 / 简化", "q": "走完五步，我有没有按费曼五建议收口？", "r": "“费曼五建议：用笔记记录核心要素；大幅度整理知识；结构化归纳理解；输出发布收反馈；简化吸收记忆产生体系。”(第22章)", "recite": "收口五连：记核心→大过滤→结构化→发出去→简化吸收。第五步成体系才是终点。", "review": ["五步需连贯，跳步效果打折", "发布需场景，私密笔记也可算输出"], "source": "第22章", "id": 46}, {"module": "心法", "title": "三次复述（解释/解决/预测）", "subtitle": "最高境界是用知识预测未来", "q": "我学到这步，能解释、解决、还能预测问题吗？", "r": "“所有学习为三目的：解释问题、解决问题、预测问题。‘预测’是学习最高境界，帮我们读懂未来而非仅搬开脚下石头。”(第23章)", "recite": "复述三级跳：能讲清→能上手→能预判。会预测，才是 100 分学习。", "review": ["预测需领域积累，新手先达前两级", "过度预测易妄断，需复盘校准"], "source": "第23章", "id": 47}, {"module": "心法", "title": "自我效能与原创观点", "subtitle": "正面自评效能，才能长出原创", "q": "我对自己“学得会”有信心吗，还是早早否定自己？", "r": "“班杜拉自我效能理论：对能力的正面主观评估直接影响行为动机。积极评估持续学，才能在已知基础上产生自己的原创观点。”(第23章)", "recite": "先信自己能学会，动力才续得上，原创观点才长得出。负面自评=提前放弃。", "review": ["自我效能需以真实进展支撑，空心鼓励无效", "过度自信会忽略真实短板"], "source": "第23章", "id": 48}, {"module": "心法", "title": "热情是创造性学习精髓", "subtitle": "热情决定挖掘深度与创造力", "q": "我对这门知识，是真有热情还是只为应付？", "r": "“热情是造成学生学习结果最大差异的因素……对话题的热情决定付出努力、挖掘深度，从根本上决定创造力与对新知识理解。”(第23章)", "recite": "热情驱动深度。为“改造未来”而学才有后劲；为解一题而学，易半途凉。", "review": ["热情可培养，非全靠天生", "纯热情无方法仍难成，需配体系"], "source": "第23章", "id": 49}, {"module": "心法", "title": "五大技巧原则总览", "subtitle": "目标 / 系统化 / 输出 / 回顾 / 简化五原则", "q": "我走五步时，每一步对应的“原则”都守了吗？", "r": "“费曼五原则：目标原则（SMART+五性）；系统化原则（归纳筛选分析）；输出原则（致用出口）；回顾原则（怀疑反证留存）；简化原则（只学核心）。”", "recite": "五步各有一根“定海神针”：目标要真、理解成网、输出致用、回顾消盲、简化留核。五针齐扎，学习才稳。", "review": ["五原则需贯穿全程，非分步孤立", "原则间有重叠，灵活取舍不教条"], "source": "第6/11/15/19/24章", "id": 50}];
+const MODULES = ["目标", "理解", "输出", "回顾", "简化", "心法"];
+const bandMeta = [["q", "Q", "提问", "#3b82f6"], ["r", "R", "原文", "#22c55e"], ["recite", "Recite", "复述", "#f97316"]];
+
+function splitLines(text){
+  const parts = text.split(/(?<=[。！？；])/);
+  return parts.filter(p=>p.trim());
+}
+function bandHTML(key,label,cls,text){
+  let inner;
+  if(key==='review'){
+    inner = '<span class="lab">'+label+'</span><span class="txt">▢ 什么情况不适用？____（留白待你填写）</span>';
+  } else {
+    const ls = splitLines(text).map(t=>'<div>'+t+'</div>').join('');
+    inner = '<span class="lab">'+label+'</span><div class="txt">'+ls+'</div>';
+  }
+  return '<div class="band '+cls+'">'+inner+'</div>';
+}
+function cardHTML(c, full){
+  const head = '<div class="head"><div class="t">'+c.title+'</div><div class="s">'+c.subtitle+'</div>'+
+    (full?('<div class="meta">模块：'+c.module+' ｜ 出处：'+c.source+'</div>'):'')+'</div>';
+  let body='';
+  for(const [k,label,cls] of bandMeta){
+    if(k==='review'){ body += bandHTML('review', '④ Review · 复习', 'review', ''); }
+    else { const keyMap={q:'q',r:'r',recite:'recite'}; body += bandHTML(k, (k==='q'?'① Q · 提问':k==='r'?'② R · 原文':'③ Recite · 复述'), cls, c[k]); }
+  }
+  return head+'<div class="body">'+body+'</div>';
+}
+function render(list){
+  const wall=document.getElementById('wall'); wall.innerHTML='';
+  list.forEach(c=>{
+    const d=document.createElement('div'); d.className='card'; d.innerHTML=cardHTML(c,false);
+    d.onclick=()=>openModal(c);
+    wall.appendChild(d);
+  });
+  document.getElementById('count').textContent='共 '+list.length+' 张';
+}
+let curModule='全部';
+function filter(){
+  const kw=document.getElementById('search').value.trim();
+  let list=CARDS.filter(c=>curModule==='全部'||c.module===curModule);
+  if(kw){ list=list.filter(c=>(c.title+c.subtitle+c.q+c.r+c.recite).includes(kw)); }
+  render(list);
+}
+document.querySelectorAll('.chip').forEach(ch=>{
+  ch.onclick=()=>{ document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+    ch.classList.add('active'); curModule=ch.dataset.m; filter(); };
+});
+document.getElementById('search').addEventListener('input', filter);
+function openModal(c){
+  document.getElementById('modal').innerHTML=cardHTML(c,true);
+  document.getElementById('overlay').classList.add('show');
+}
+document.getElementById('overlay').onclick=(e)=>{ if(e.target.id==='overlay') document.getElementById('overlay').classList.remove('show'); };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('overlay').classList.remove('show'); });
+filter();
+</script>
+</body>
+</html>
