@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ReadBook · 读书认知卡片</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1f2933; --sub:#6b7785;
+    --line:#e3e8ef; --brand:#2f6fed; --brand2:#eef3ff; --radius:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+    padding:48px 20px 64px;
+  }
+  .head{text-align:center; margin-bottom:36px}
+  .head h1{font-size:38px; margin:0 0 10px; letter-spacing:1px}
+  .head p{font-size:18px; color:var(--sub); margin:0}
+  .list{width:100%; max-width:560px; display:flex; flex-direction:column; gap:18px}
+  .item{
+    display:block; text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px 26px; transition:.18s; box-shadow:0 1px 2px rgba(16,24,40,.04);
+  }
+  .item:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(47,111,237,.12); border-color:var(--brand)}
+  .item .t{font-size:24px; font-weight:700; margin-bottom:6px}
+  .item .d{font-size:16px; color:var(--sub)}
+  .item .go{margin-top:14px; display:inline-block; font-size:16px; color:var(--brand); font-weight:600}
+  .foot{margin-top:40px; font-size:14px; color:var(--sub); text-align:center}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>ReadBook</h1>
+    <p>用输出倒逼输入 · 读书认知卡片</p>
+  </div>
+
+  <div class="list">
+    <a class="item" href="费曼学习法_50认知卡.html">
+      <div class="t">费曼学习法 · 50 认知卡</div>
+      <div class="d">用输出倒逼输入，把一本书读薄、读透</div>
+      <span class="go">打开 →</span>
+    </a>
+    <a class="item" href="毛泽东兵法_50认知卡.html">
+      <div class="t">毛泽东兵法 · 50 认知卡</div>
+      <div class="d">从战略与处世中提炼的可复用思维模型</div>
+      <span class="go">打开 →</span>
+    </a>
+  </div>
+
+  <div class="foot">更多书目陆续上架 · 本地构建后推送至 GitHub Pages</div>
+</body>
+</html>
