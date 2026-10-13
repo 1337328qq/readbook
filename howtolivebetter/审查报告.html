@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HowToLiveBetter 项目审查与安装报告</title>
+<meta name="description" content="《高性价比人生指南》(eternity4719/HowToLiveBetter) 的安全审计、安装与技能升级记录。">
+<style>
+:root{
+  --bg:#ffffff; --bg-alt:#f6f6f7; --bg-soft:#f6f6f7;
+  --divider:#e2e2e3;
+  --t1:rgba(60,60,67,1); --t2:rgba(60,60,67,.78); --t3:rgba(60,60,67,.56);
+  --brand-1:#3451b2; --brand-2:#3a5ccc; --brand-soft:rgba(100,108,255,.12);
+  --green-1:#18794e; --green-soft:rgba(16,185,129,.14);
+  --yellow-1:#915930; --yellow-soft:rgba(234,179,8,.14);
+  --red-1:#b8272c; --red-soft:rgba(244,63,94,.12);
+  --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg-alt);color:var(--t1);font:15px/1.85 var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:48px 24px 72px}
+a{color:var(--brand-1);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+code{font-family:var(--mono);font-size:.88em;background:var(--bg-soft);border:1px solid var(--divider);border-radius:5px;padding:1px 6px;word-break:break-all}
+
+/* 头部 */
+.hero{background:var(--bg);border:1px solid var(--divider);border-radius:14px;padding:34px 36px 30px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.hero .kicker{font-size:13px;font-weight:600;letter-spacing:.12em;color:var(--brand-1);text-transform:uppercase;margin-bottom:10px}
+.hero h1{font-size:28px;line-height:1.4;margin:0 0 8px;letter-spacing:.01em}
+.hero .sub{color:var(--t2);font-size:15px;margin:0 0 22px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.meta .m{background:var(--bg-alt);border:1px solid var(--divider);border-radius:10px;padding:12px 14px}
+.meta .m .k{font-size:12px;color:var(--t3);margin-bottom:4px}
+.meta .m .v{font-size:14px;font-weight:600;line-height:1.5}
+.meta .m .v.mono{font-family:var(--mono);font-size:12.5px;font-weight:500}
+
+/* 目录 */
+.toc{background:var(--bg);border:1px solid var(--divider);border-radius:14px;padding:20px 24px;margin-top:18px}
+.toc .t{font-size:13px;font-weight:600;color:var(--t3);letter-spacing:.08em;margin-bottom:10px}
+.toc ol{margin:0;padding-left:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 18px}
+.toc a{display:block;padding:5px 10px;border-radius:7px;font-size:14px;color:var(--t2)}
+.toc a:hover{background:var(--brand-soft);color:var(--brand-1);text-decoration:none}
+.toc .n{font-family:var(--mono);color:var(--t3);margin-right:8px;font-size:13px}
+
+/* 章节卡片 */
+section{background:var(--bg);border:1px solid var(--divider);border-radius:14px;padding:28px 32px;margin-top:18px;box-shadow:0 1px 2px rgba(0,0,0,.04);scroll-margin-top:24px}
+h2{font-size:20px;margin:0 0 18px;padding-bottom:12px;border-bottom:1px solid var(--divider);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h2 .no{font-family:var(--mono);font-size:14px;color:var(--brand-1);background:var(--brand-soft);border-radius:6px;padding:2px 8px}
+h3{font-size:16px;margin:26px 0 10px}
+h3:first-of-type{margin-top:4px}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:6px 0}
+li::marker{color:var(--t3)}
+
+/* 徽章 */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;border-radius:999px;padding:3px 12px;vertical-align:middle}
+.badge.ok{color:var(--green-1);background:var(--green-soft)}
+.badge.warn{color:var(--yellow-1);background:var(--yellow-soft)}
+.badge.info{color:var(--brand-1);background:var(--brand-soft)}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+
+/* 结论条 */
+.verdict{border-radius:12px;padding:16px 20px;margin:0 0 18px;font-size:15px;line-height:1.8}
+.verdict.ok{background:var(--green-soft);border:1px solid rgba(16,185,129,.35)}
+.verdict b{color:var(--green-1)}
+
+/* 表格 */
+.tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;display:block;overflow-x:auto}
+.tbl th,.tbl td{border:1px solid var(--divider);padding:9px 12px;text-align:left;vertical-align:top;line-height:1.7}
+.tbl th{background:var(--bg-alt);font-weight:600;white-space:nowrap}
+.tbl td:first-child{white-space:nowrap;font-weight:500}
+.tbl tr:last-child td:border-radius:0 0 8px 8px}
+
+/* 提示块 */
+.note{border-left:3px solid var(--brand-1);background:var(--brand-soft);border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:14px}
+.note.y{border-left-color:#d99a26;background:var(--yellow-soft)}
+.note .bt{font-weight:600;display:block;margin-bottom:4px}
+
+/* 步骤列表 */
+.steps{counter-reset:st;list-style:none;padding-left:0;margin:14px 0}
+.steps li{counter-increment:st;position:relative;padding-left:38px;margin:12px 0}
+.steps li::before{content:counter(st);position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;background:var(--brand-soft);color:var(--brand-1);font:600 13px/24px var(--mono);text-align:center}
+.steps li::marker{content:none}
+.steps b{display:block}
+
+/* 入口链接 */
+.entries{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:14px 0}
+.entries a{display:block;background:var(--bg-alt);border:1px solid var(--divider);border-radius:10px;padding:13px 16px;font-size:14px;color:var(--t1);transition:border-color .18s}
+.entries a:hover{border-color:var(--brand-1);text-decoration:none}
+.entries .k{font-size:12px;color:var(--t3);display:block;margin-bottom:3px}
+.entries .v{font-weight:600;color:var(--brand-1);word-break:break-all}
+
+footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--divider);color:var(--t3);font-size:13px;line-height:1.8}
+footer p{margin:6px 0}
+@media (max-width:640px){
+  .wrap{padding:24px 14px 48px}
+  .hero{padding:24px 20px 22px}
+  .hero h1{font-size:23px}
+  section{padding:20px 18px}
+}
+@media print{
+  body{background:#fff}
+  .wrap{max-width:100%;padding:0}
+  section,.hero,.toc{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <div class="kicker">项目审查报告 · 安全审计</div>
+  <h1>HowToLiveBetter 项目审查与安装报告</h1>
+  <p class="sub">《高性价比人生指南》开源知识库 —— 审查、安全审计与本地化部署记录</p>
+  <div class="meta">
+    <div class="m"><div class="k">项目</div><div class="v">eternity4719/HowToLiveBetter</div></div>
+    <div class="m"><div class="k">审查日期</div><div class="v">2026-10-12</div></div>
+    <div class="m"><div class="k">部署位置</div><div class="v">1337328qq.github.io/readbook/</div></div>
+    <div class="m"><div class="k">许可证</div><div class="v">正文 CC BY 4.0 / 代码 MIT</div></div>
+  </div>
+</div>
+
+<nav class="toc">
+  <div class="t">目录</div>
+  <ol>
+    <li><a href="#s1"><span class="n">01</span>项目概况</a></li>
+    <li><a href="#s2"><span class="n">02</span>安全审计结论</a></li>
+    <li><a href="#s3"><span class="n">03</span>安装内容与验证</a></li>
+    <li><a href="#s4"><span class="n">04</span>方案 C：技能内容库升级</a></li>
+    <li><a href="#s5"><span class="n">05</span>使用入口</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="no">01</span>项目概况</h2>
+  <table class="tbl">
+    <tr><th style="width:110px">项</th><th>值</th></tr>
+    <tr><td>正文规模</td><td>34 章、687 条建议（实测：<code>book/</code> 34 个 .md，<code>### N.</code> 条目 687 条）</td></tr>
+    <tr><td>质量标注</td><td>证据等级 A/B/C；性价比档 极高/高/一般；每条含成本标签（钱/时间/毅力）+ 原始出处</td></tr>
+    <tr><td>最近提交</td><td>2026-10-12（活跃维护中，累计 389 commits）</td></tr>
+    <tr><td>主要组件</td><td><code>index.html</code> 纯静态检索页、<code>selfcheck.html</code> 生活自查页、<code>book/</code> 正文、<code>docs/</code> 长文 10 篇、<code>skills/life-decision-guide/</code> AI 技能、<code>tools/</code> 构建脚本（EPUB/PDF/离线HTML/Anki）</td></tr>
+    <tr><td>官方声明</td><td>未发行任何代币/数字资产</td></tr>
+  </table>
+</section>
+
+<section id="s2">
+  <h2><span class="no">02</span>安全审计结论 <span class="badge ok"><span class="dot"></span>P2 安全 · 无投毒风险</span></h2>
+  <div class="verdict ok">审计范围：skill 本体、全部工具脚本、CI 工作流、网页外部引用、正文与长文。<b>未发现 P0 / P1 风险，可放心使用。</b></div>
+
+  <h3>未发现 P0（阻断级）风险</h3>
+  <ul>
+    <li>无「下载即执行」：没有任何 <code>curl | bash</code>、下载后 <code>eval</code> 的组合</li>
+    <li>无敏感信息读取外传：不触碰 <code>~/.ssh</code>、<code>.env</code>、凭证目录</li>
+    <li>无破坏性命令：全仓库无 <code>rm -rf</code>、无批量删除用户文件的操作</li>
+    <li>无隐蔽执行：无 <code>nohup</code>、<code>2&gt;/dev/null</code> 配合危险操作的模式</li>
+  </ul>
+
+  <h3>未发现 P1（需关注）风险</h3>
+  <ul>
+    <li><b>无全局依赖安装</b>：脚本内无 <code>npm install -g</code> / <code>pip install</code>；EPUB 工具唯一依赖 <code>marked@18.0.13</code>（npm 官方源、版本锁定、<code>npm ci</code> 安装）</li>
+    <li><b>无非官方源</b>：CI 下载的 pandoc 3.11 / typst 0.15.1 / epubcheck 5.4.0 均来自官方 GitHub Releases</li>
+    <li><b>元数据正常</b>：description 长度正常、无占位符</li>
+  </ul>
+
+  <h3>逐项检查明细</h3>
+  <table class="tbl">
+    <tr><th style="width:200px">检查项</th><th>结果</th></tr>
+    <tr><td>命令执行<br>（curl/wget/eval/exec）</td><td>仅 3 处，全部 benign：<code>git rev-parse HEAD</code>（取提交号）、<code>pandoc</code>/<code>typst</code>（用户自装文档工具，路径可经环境变量指定）、Chrome headless 本地截 og.png</td></tr>
+    <tr><td>网络请求</td><td>skill 中 <code>git clone</code>/<code>curl</code> 仅指向官方仓库 raw.githubusercontent.com 取正文；<code>tools/check-links.mjs</code> 按书中引用列表发外链检查请求（CI 每周跑，属声明的功能）</td></tr>
+    <tr><td>敏感路径</td><td>无</td></tr>
+    <tr><td>文件操作</td><td>仅写 <code>dist/</code>（构建产物）和系统临时目录（og 截图 profile、anki 临时库，用完即删）</td></tr>
+    <tr><td>SQL</td><td>Anki 构建用 node:sqlite，建表 SQL 为静态字符串、插入用预编译参数化语句，无注入面</td></tr>
+    <tr><td>混淆/编码</td><td>无 base64 暗桩、无 <code>fromCharCode</code> 类混淆</td></tr>
+    <tr><td>正文与长文</td><td>34 章 + 10 篇 docs 全部为纯 Markdown，无 <code>&lt;script&gt;</code>、无可疑外链域名</td></tr>
+    <tr><td>CI 工作流</td><td>book.yml（构建四件套并发布固定 Release）+ links.yml（每周外链巡检，contents: read）；token 仅用于发布本仓库 Release，权限最小化</td></tr>
+    <tr><td>index.html</td><td>XSS 防护到位（渲染均过 <code>esc()</code> 转义）；localStorage 仅存主题偏好；fetch 只读本地 <code>book/</code> 文件</td></tr>
+  </table>
+
+  <h3>隐私注意点（非安全风险，知悉即可）</h3>
+  <div class="note y"><span class="bt">本部署已主动处理</span>原站检索页会加载 Google Fonts + Google Analytics（gtag）。转载部署时已<b>整段移除 gtag</b>，并移除原站侧栏的第三方广告（Minecraft 服务器）与作者个人微信赞赏码，避免替他人导流、避免访客行为数据汇入他人统计。</div>
+  <div class="note">正文外链指向期刊/政府网站，<code>check-links.mjs</code> 联网检查时会产生对这些站点的请求（仅 CI 或手动运行时，本部署不含该脚本）。</div>
+</section>
+
+<section id="s3">
+  <h2><span class="no">03</span>安装内容与验证</h2>
+  <ol class="steps">
+    <li><b>完整源码已就位</b>本地安装于 <code>C:\Users\lenovo\WorkBuddy\HowToLiveBetter</code>（github.com 主站被本机代理拦截，改从 codeload.github.com 取官方 ZIP，内容与仓库一致）。</li>
+    <li><b>本地检索页已验证</b>http://localhost:8000/ （python http.server，后台运行）。</li>
+    <li><b>访问验证</b>（全部 HTTP 200）：<code>index.html</code> → 200（101,676 bytes）；<code>book/01-不要早死.md</code> → 200（108,975 bytes）；<code>selfcheck.html</code> → 200。</li>
+    <li><b>离线电子书未本地构建</b>——Release 页有官方预生成件，需要时再按 README 构建（PDF 需另装 pandoc ≥3.1 + typst ≥0.13）。</li>
+  </ol>
+</section>
+
+<section id="s4">
+  <h2><span class="no">04</span>已执行：方案 C —— 升级现有 <code>hltb-life-guide</code> 内容库</h2>
+  <p>按单一入口惯例，选择<b>用上游最新正文升级现有改编技能</b>，而不是新增第三个技能：</p>
+  <ul>
+    <li><b>备份先行</b>（未动原位）：<code>~/.workbuddy/skills-backup/2026-10-12_hltb-life-guide-upgrade/</code>，含 v1.3.0 完整 zip 快照 + 原始目录副本 + MANIFEST.md（回滚方法见其中）。</li>
+    <li><b>内容替换</b>：<code>references/book-01..33</code>（601 条旧快照）整体替换为上游 <code>book/01..34</code> 原版正文，<b>新增第 34 章「家里的常备药别吃出事」</b>；现为 <b>34 章 687 条</b>（较旧版 +86 条）。</li>
+    <li><b>扩展保留</b>：14 个日更文件（2026-09-25 ~ 09-28，赚钱 6 子类 + 副业入门/数字极简/信息甄别等）原样保留；库内合计 <b>701 条</b>。</li>
+    <li><b>元数据更新</b>：SKILL.md 升至 v1.4.0；章节数 33→34；许可证表述由过时的「Unlicense」更正为上游现行的 <b>CC BY 4.0</b>（已核对仓库 LICENSE 文件）；INDEX.md 重写（含同步日期与逐章条目数）。</li>
+    <li><b>结构校验通过</b>：687 条条目逐一具备「成本标签 + 来源行 + 证据等级」三要素（687/687/687）；grep 检索式在新内容上实测可用（关键词跨章定位正常，如「低钠盐」现位于第 2 章第 9 条、「对乙酰氨基酚」位于第 34 章第 1 条）。</li>
+    <li><b>未安装</b>上游自带的 <code>life-decision-guide</code> 薄路由技能（与改编版触发词重叠，违背单一入口原则）；上游项目本体仍完整保留在本地，可随时对照。</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2><span class="no">05</span>使用入口</h2>
+  <div class="entries">
+    <a href="./index.html"><span class="k">本站阅读（本部署）</span><span class="v">/readbook/howtolivebetter/ · 687 条全文检索</span></a>
+    <a href="./selfcheck.html"><span class="k">生活自查</span><span class="v">回答几十道是否题，看哪些还没做到</span></a>
+    <a href="https://eternity4719.github.io/HowToLiveBetter/" target="_blank" rel="noopener"><span class="k">上游在线版（原站）</span><span class="v">eternity4719.github.io/HowToLiveBetter/</span></a>
+    <a href="https://github.com/eternity4719/HowToLiveBetter/releases/tag/epub-latest" target="_blank" rel="noopener"><span class="k">电子书下载（官方自动更新）</span><span class="v">EPUB / PDF / 离线 HTML / Anki</span></a>
+  </div>
+  <p>本地检索：在 <code>C:\Users\lenovo\WorkBuddy\HowToLiveBetter</code> 目录运行 <code>python -m http.server 8000</code> 后访问 http://localhost:8000/ 。</p>
+</section>
+
+<footer>
+  <p>本页为《HowToLiveBetter 项目审查与安装报告》的 HTML 版，随转载部署发布于 <a href="https://1337328qq.github.io/readbook/">1337328qq.github.io/readbook/</a>。</p>
+  <p>正文内容源自 <a href="https://github.com/eternity4719/HowToLiveBetter" target="_blank" rel="noopener">eternity4719/HowToLiveBetter</a>（《高性价比人生指南》），按 <a href="https://creativecommons.org/licenses/by/4.0/deed.zh-hans" target="_blank" rel="noopener">CC BY 4.0</a> 许可转载，代码部分按 MIT 许可。转载改编请署名并附原文链接。</p>
+</footer>
+
+</div>
+</body>
+</html>

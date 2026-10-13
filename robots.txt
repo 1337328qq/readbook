@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://1337328qq.github.io/readbook/sitemap.xml

@@ -22,6 +22,11 @@
   .head h1{font-size:38px; margin:0 0 10px; letter-spacing:1px}
   .head p{font-size:18px; color:var(--sub); margin:0}
   .list{width:100%; max-width:560px; display:flex; flex-direction:column; gap:18px}
+  .label{
+    font-size:13px; font-weight:700; letter-spacing:.14em; color:var(--sub);
+    margin:8px 2px -8px; display:flex; align-items:center; gap:10px;
+  }
+  .label::after{content:""; flex:1; height:1px; background:var(--line)}
   .item{
     display:block; text-decoration:none; color:inherit;
     background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
@@ -41,6 +46,19 @@
   </div>
 
   <div class="list">
+    <div class="label">全文检索</div>
+    <a class="item" href="howtolivebetter/">
+      <div class="t">高性价比人生指南 · 全文检索</div>
+      <div class="d">34 章 687 条循证建议：每条写明成本、收益、证据等级和原始出处，可按钱、时间、毅力检索</div>
+      <span class="go">打开 →</span>
+    </a>
+    <a class="item" href="howtolivebetter/审查报告.html">
+      <div class="t">HowToLiveBetter · 审查报告</div>
+      <div class="d">项目安全审计、安装验证与本地化部署记录（P2 安全，可放心使用）</div>
+      <span class="go">打开 →</span>
+    </a>
+
+    <div class="label">认知卡片</div>
     <a class="item" href="费曼学习法_50认知卡.html">
       <div class="t">费曼学习法 · 50 认知卡</div>
       <div class="d">用输出倒逼输入，把一本书读薄、读透</div>
