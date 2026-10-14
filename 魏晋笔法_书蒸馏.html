@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>魏晋笔法 · 书蒸馏</title>
+<style>
+  :root{
+    --bg:#f7f5f0; --card:#ffffff; --ink:#2b2b2b; --sub:#6f6a60; --line:#e5e0d5;
+    --brand:#8c4a2f; --brand-soft:#f3e9e2; --dai:#3d5a6c; --dai-soft:#e8eef2;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",serif;
+    background:var(--bg); color:var(--ink); line-height:1.75;
+    padding:36px 18px 72px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  .head{text-align:center;margin-bottom:14px}
+  .head h1{font-size:34px;margin:0 0 8px;letter-spacing:2px}
+  .head .sub{font-size:15px;color:var(--sub)}
+  .badges{margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .badge{font-size:12px;padding:3px 12px;border-radius:20px;background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .badge.dai{background:var(--dai-soft);color:var(--dai)}
+  .claim{
+    margin:26px 0 8px; text-align:center; font-size:19px; font-weight:700;
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 22px; box-shadow:0 1px 2px rgba(43,43,43,.04);
+  }
+  .claim small{display:block;font-size:13px;color:var(--sub);font-weight:400;margin-top:8px}
+  h2.sec{
+    font-size:22px;margin:38px 0 14px;padding-left:12px;
+    border-left:4px solid var(--brand);
+  }
+  h2.sec small{font-size:13px;color:var(--sub);font-weight:400;margin-left:10px}
+  /* 时间轴 */
+  .era{display:flex;flex-direction:column;gap:12px}
+  .era-item{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;display:flex;gap:16px;align-items:flex-start;
+  }
+  .era-item .yr{
+    flex:0 0 auto;font-size:15px;font-weight:700;color:#fff;background:var(--dai);
+    border-radius:8px;padding:4px 12px;margin-top:2px;white-space:nowrap;
+  }
+  .era-item .yr.cao{background:var(--brand)}
+  .era-item .bd{flex:1}
+  .era-item .t{font-size:17px;font-weight:700;margin-bottom:4px}
+  .era-item .d{font-size:14.5px;color:var(--sub)}
+  /* 书家卡 */
+  .masters{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .master{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;box-shadow:0 1px 2px rgba(43,43,43,.04);display:flex;flex-direction:column;
+  }
+  .master .nm{font-size:19px;font-weight:700;margin-bottom:2px}
+  .master .aka{font-size:13px;color:var(--brand);font-weight:600;margin-bottom:8px}
+  .master .bio{font-size:14px;color:var(--sub);flex:1}
+  .master .ev{font-size:12px;color:#a39c8d;margin-top:10px;font-family:ui-monospace,Menlo,monospace}
+  .master.star{border-color:var(--brand);background:linear-gradient(180deg,#fffdf9,#fff)}
+  /* 机制链 */
+  .chain{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+  .chain .step{
+    flex:1 1 160px;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;position:relative;
+  }
+  .chain .step .no{font-size:12px;color:var(--brand);font-weight:700;margin-bottom:4px}
+  .chain .step .t{font-size:16px;font-weight:700;margin-bottom:4px}
+  .chain .step .d{font-size:13.5px;color:var(--sub)}
+  .chain .arrow{align-self:center;color:#c9c2b4;font-size:20px;font-weight:700}
+  /* 表格 */
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(43,43,43,.04)}
+  th,td{padding:10px 14px;font-size:14.5px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#f0ece3;font-size:13.5px;color:#57503f;font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td.pg{font-family:ui-monospace,Menlo,monospace;color:var(--dai);white-space:nowrap;font-size:13.5px}
+  /* 摘要卡 */
+  .sum{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;font-size:15px}
+  .sum .one{font-size:17px;font-weight:700;color:var(--brand);margin-bottom:10px}
+  /* 概念 */
+  .terms{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+  .term{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+  .term .t{font-size:15.5px;font-weight:700}
+  .term .d{font-size:13.5px;color:var(--sub);margin-top:2px}
+  .note{font-size:13px;color:var(--sub);background:#fdf6ee;border:1px dashed #e0cdb4;border-radius:10px;padding:10px 14px;margin-top:12px}
+  .foot{margin-top:44px;text-align:center;font-size:12.5px;color:#a39c8d;line-height:1.9}
+  .foot .ai{display:inline-block;background:#efece4;border-radius:6px;padding:1px 8px;margin-bottom:6px}
+  a{color:var(--dai)}
+  @media (max-width:640px){
+    body{padding:24px 14px 56px}
+    .head h1{font-size:27px}
+    .claim{font-size:17px}
+    .era-item{flex-direction:column;gap:8px}
+    .chain{flex-direction:column}
+    .chain .arrow{transform:rotate(90deg);align-self:flex-start;margin-left:26px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1>魏晋笔法</h1>
+    <div class="sub">内题《第九讲 魏晋书法》｜ 书法教材一讲 · 扫描版 17 页</div>
+    <div class="badges">
+      <span class="badge">书蒸馏 · D1 精华内容</span>
+      <span class="badge dai">S 速蒸馏档</span>
+      <span class="badge dai">正文 2 页 + 图版 13 页</span>
+    </div>
+  </div>
+
+  <div class="claim">
+    魏晋是楷、行、今草定型的一代，王羲之是集大成的「书圣」。
+    <small>核心主张 · 锚点：原书第 1、4 页</small>
+  </div>
+
+  <h2 class="sec">一、时代演进 <small>曹魏 → 西晋 → 东晋</small></h2>
+  <div class="era">
+    <div class="era-item">
+      <span class="yr cao">曹魏</span>
+      <div class="bd">
+        <div class="t">字体发展成熟，楷书立定</div>
+        <div class="d">「曹魏时代，字体发展逐渐成熟，日趋完备。尤其楷书，取得了很大的成就」——著名楷书家有钟繇。<span style="color:#a39c8d">（第1页）</span></div>
+      </div>
+    </div>
+    <div class="era-item">
+      <span class="yr">西晋</span>
+      <div class="bd">
+        <div class="t">索靖为一代书家</div>
+        <div class="d">「最有影响的西晋书家当推索靖」。《出师颂》见图版第 2 页。<span style="color:#a39c8d">（第1页）</span></div>
+      </div>
+    </div>
+    <div class="era-item">
+      <span class="yr">东晋</span>
+      <div class="bd">
+        <div class="t">繁荣 · 南移 · 行草定型</div>
+        <div class="d">「东晋时期书法十分繁荣，文化重心南移至江浙一带」；行书成熟为一代风气，楷书、今草也逐渐成熟，代表是王羲之、王献之。<span style="color:#a39c8d">（第4页）</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec">二、书家列传 <small>四家定评</small></h2>
+  <div class="masters">
+    <div class="master">
+      <div class="nm">钟繇</div>
+      <div class="aka">151-230 · 人称「钟太傅」</div>
+      <div class="bio">字元常，官至太傅。曹魏楷书的代表人物——楷书在曹魏「取得了很大的成就」，他是原书点名的第一位书家。</div>
+      <div class="ev">锚点：第1页</div>
+    </div>
+    <div class="master">
+      <div class="nm">索靖</div>
+      <div class="aka">西晋 · 一代书家</div>
+      <div class="bio">原书对西晋书坛的定评：「最有影响的西晋书家当推索靖」。《出师颂》为其传世名迹（图版第2页）。</div>
+      <div class="ev">锚点：第1页 · 图版p2</div>
+    </div>
+    <div class="master star">
+      <div class="nm">王羲之</div>
+      <div class="aka">303-361 · 「书圣」</div>
+      <div class="bio">字逸少，琅琊临沂人，官至右军将军，人称「王右军」。继承传统、转益多师，使楷书摆脱隶书影响，后世楷、行、草诸体皆取其法——因此称「书圣」。</div>
+      <div class="ev">锚点：第4页</div>
+    </div>
+    <div class="master">
+      <div class="nm">王献之</div>
+      <div class="aka">东晋 · 行书代表</div>
+      <div class="bio">与王羲之并列东晋行书代表人物。《鸭头丸帖》《洛神赋》十三行见图版第 8、9 页。</div>
+      <div class="ev">锚点：第4页 · 图版p8-9</div>
+    </div>
+  </div>
+
+  <h2 class="sec">三、为什么是王羲之 <small>原书给出的机制链</small></h2>
+  <div class="chain">
+    <div class="step"><div class="no">第 1 步</div><div class="t">继承传统</div><div class="d">在继承传统根基上，不失根本</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="no">第 2 步</div><div class="t">转益多师</div><div class="d">多方取法，不拘一门</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="no">第 3 步</div><div class="t">楷书脱隶</div><div class="d">使楷书摆脱隶书影响，革新发展</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="no">第 4 步</div><div class="t">诸体模范</div><div class="d">后世楷、行、草皆有可取法的模范</div></div>
+  </div>
+  <div class="note">四步一环，解释了「书圣」评价的技艺根由——不是名气，是「继承→取法→突破→立法」的完整链条。这是备课可直接用的讲点。</div>
+
+  <h2 class="sec">四、图版名迹清单 <small>13 页全量</small></h2>
+  <table>
+    <tr><th style="width:90px">页码</th><th>内容</th><th>备注</th></tr>
+    <tr><td class="pg">p2</td><td>索靖《出师颂》</td><td>西晋，原书以其代表西晋书坛</td></tr>
+    <tr><td class="pg">p3</td><td>草书图版</td><td>无题签，可见「节过」等字</td></tr>
+    <tr><td class="pg">p5</td><td>冯承素摹《兰亭序》卷</td><td>唐人摹本系统</td></tr>
+    <tr><td class="pg">p6</td><td>定武本《兰亭序》</td><td>石刻传本系统</td></tr>
+    <tr><td class="pg">p7</td><td>唐 虞世南临《兰亭序》</td><td>临本系统</td></tr>
+    <tr><td class="pg">p8</td><td>王献之《鸭头丸帖》</td><td>两行草书</td></tr>
+    <tr><td class="pg">p9</td><td>王献之《洛神赋》十三行</td><td>小楷名作</td></tr>
+    <tr><td class="pg">p10</td><td>钟繇楷书作品</td><td>可见「帝」「表」等字</td></tr>
+    <tr><td class="pg">p11</td><td>草书图版</td><td>可见「三月」字样</td></tr>
+    <tr><td class="pg">p12</td><td>草书名迹图版</td><td>起首「中秋不复不得相……」</td></tr>
+    <tr><td class="pg">p13</td><td>行书刻本图版</td><td>多处「足下」字样</td></tr>
+    <tr><td class="pg">p14</td><td>草书信札图版</td><td>落款处有「给事中」相关字样</td></tr>
+    <tr><td class="pg">p15-16</td><td>《上为济白帖》及背面</td><td>同一墨迹正背面</td></tr>
+  </table>
+  <div class="note">《兰亭序》并置摹本（冯承素摹）、拓本（定武本）、临本（虞世南临）三个传本系统——这是书法史版本的常识框架（蒸馏者按语，原书未展开，引用具体版本前建议核对书法史专著）。</div>
+
+  <h2 class="sec">五、概念速查</h2>
+  <div class="terms">
+    <div class="term"><div class="t">「书圣」</div><div class="d">原书对王羲之的定评——后世楷行草皆可取法</div></div>
+    <div class="term"><div class="t">「钟太傅」</div><div class="d">钟繇官至太傅，人以官职称之</div></div>
+    <div class="term"><div class="t">「王右军」</div><div class="d">王羲之官至右军将军，人以官职称之</div></div>
+    <div class="term"><div class="t">转益多师</div><div class="d">多方取法而不拘一门，王羲之的成就关键</div></div>
+    <div class="term"><div class="t">楷书脱隶</div><div class="d">楷书摆脱隶书影响而独立成熟的关键一跃</div></div>
+  </div>
+
+  <h2 class="sec">六、一段话摘要</h2>
+  <div class="sum">
+    <div class="one">魏晋三代，一脉相承</div>
+    这本书是书法教材的第九讲：曹魏时代字体发展成熟，楷书取得很大成就，代表人物钟繇；西晋最有影响的书家是索靖；东晋书法繁荣，文化重心南移至江浙，行书成熟为一代风气，代表是王羲之、王献之，楷书与今草也渐成熟。王羲之的贡献在于继承传统、转益多师，使楷书摆脱隶书影响，后世楷行草皆取其法，故称「书圣」。另附十三页字帖图版，含《出师颂》《兰亭序》三大传本、《鸭头丸帖》《洛神赋》十三行等名迹。
+  </div>
+
+  <h2 class="sec">七、适用边界 <small>用这份稿子的注意事项</small></h2>
+  <div class="sum" style="font-size:14px">
+    ① 本讲只覆盖魏晋一段，上不接东汉隶书与章草的来路，下不涉南北朝碑学，是书法史片段而非完整史纲；② 书家生平只给了生卒、籍贯、官职三项，完整传记需外部资料补；③ 图版中 5 页无明确题签，引用具体作品名前须核对原书页面；④ 本稿基于原书扫描版逐页识别完成，未联网比对同类书法史著作。
+  </div>
+
+  <div class="foot">
+    <div><span class="ai">AI 辅助生成 · 知识蒸馏稿</span></div>
+    <div>每条命题可依页码锚点回原书核对 · 门禁：PC 1.00 / AR 1.00 / SF 0.95 · 质量评分 96/100</div>
+    <div>原书：《魏晋笔法》（《第九讲 魏晋书法》，扫描版 PDF）· 知识截止 2026-10 · 本稿非原书替代品</div>
+  </div>
+
+</div>
+</body>
+</html>
