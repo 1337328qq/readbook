@@ -28,18 +28,18 @@
   .gfilters button{padding:5px 12px;font-size:13px;border:1px solid var(--line);background:#fff;color:var(--sub);border-radius:16px;cursor:pointer}
   .gfilters button.on{background:#1f2933;color:#fff;border-color:#1f2933}
   h2{font-size:20px;margin:26px 0 12px;border-left:4px solid var(--brand);padding-left:10px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 14px;box-shadow:0 1px 2px rgba(16,24,40,.04);display:flex;flex-direction:column}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(268px,100%),1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 14px;box-shadow:0 1px 2px rgba(16,24,40,.04);display:flex;flex-direction:column;min-width:0;overflow:hidden}
   .card .tag{display:inline-block;font-size:12px;color:#fff;border-radius:6px;padding:2px 8px;margin-bottom:8px;align-self:flex-start}
   .card .grade{display:inline-block;font-size:12px;border-radius:6px;padding:2px 8px;margin:0 0 8px 6px;align-self:flex-start;font-weight:600}
   .gQA{background:#fdf1e0;color:#b25e09}
   .gArt{background:#e8eefc;color:#2f6fed}
-  .card .name{font-size:17px;font-weight:700;margin-bottom:6px}
-  .card .desc{font-size:14px;color:var(--sub);flex:1;white-space:pre-wrap}
-  .card .code{font-size:12px;color:#aab;margin-top:10px;font-family:ui-monospace,Menlo,monospace}
+  .card .name{font-size:17px;font-weight:700;margin-bottom:6px;overflow-wrap:anywhere;word-break:break-word}
+  .card .desc{font-size:14px;color:var(--sub);flex:1;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+  .card .code{font-size:12px;color:#aab;margin-top:10px;font-family:ui-monospace,Menlo,monospace;overflow-wrap:anywhere;word-break:break-word}
   .card.hide{display:none}
   h2.hide{display:none}
-  /* 手机：sticky 只剩一行，筛选浮层化 */
+  /* 手机：sticky 只剩一行，筛选浮层化；grid 轨道锁 0 下限防内容撑破（横向溢出根因）；字号上调便于阅读 */
   @media (max-width:640px){
     body{padding:20px 12px 48px}
     .head h1{font-size:24px}
@@ -49,7 +49,9 @@
     .panel{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(16,24,40,.16);padding:14px;display:none;flex-direction:column;gap:12px;max-height:64vh;overflow:auto;z-index:20;margin-top:6px}
     .panel.open{display:flex}
     .filters,.gfilters{justify-content:flex-start}
-    .grid{grid-template-columns:1fr}
+    .grid{grid-template-columns:minmax(0,1fr)}
+    .card .name{font-size:18px}
+    .card .desc{font-size:15px;line-height:1.7}
   }
 </style>
 </head>

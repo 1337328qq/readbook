@@ -13,7 +13,7 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",serif;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.75;
     padding:36px 18px 72px;
   }
@@ -48,7 +48,7 @@
   .era-item .yr.cao{background:var(--brand)}
   .era-item .bd{flex:1}
   .era-item .t{font-size:17px;font-weight:700;margin-bottom:4px}
-  .era-item .d{font-size:14.5px;color:var(--sub)}
+  .era-item .d{font-size:15px;color:var(--sub)}
   /* 书家卡 */
   .masters{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
   .master{
@@ -81,20 +81,24 @@
   .sum .one{font-size:17px;font-weight:700;color:var(--brand);margin-bottom:10px}
   /* 概念 */
   .terms{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-  .term{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+  .term{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:0;overflow:hidden}
   .term .t{font-size:15.5px;font-weight:700}
-  .term .d{font-size:13.5px;color:var(--sub);margin-top:2px}
+  .term .d{font-size:14.5px;color:var(--sub);margin-top:2px;overflow-wrap:anywhere;word-break:break-word}
   .note{font-size:13px;color:var(--sub);background:#fdf6ee;border:1px dashed #e0cdb4;border-radius:10px;padding:10px 14px;margin-top:12px}
   .foot{margin-top:44px;text-align:center;font-size:12.5px;color:#a39c8d;line-height:1.9}
   .foot .ai{display:inline-block;background:#efece4;border-radius:6px;padding:1px 8px;margin-bottom:6px}
   a{color:var(--dai)}
   @media (max-width:640px){
     body{padding:24px 14px 56px}
-    .head h1{font-size:27px}
+    .head h1{font-size:27px;letter-spacing:1px}
     .claim{font-size:17px}
     .era-item{flex-direction:column;gap:8px}
+    .era-item .t{font-size:17px}
     .chain{flex-direction:column}
     .chain .arrow{transform:rotate(90deg);align-self:flex-start;margin-left:26px}
+    .master .bio{font-size:15px}
+    .sum{font-size:15.5px}
+    th,td{padding:10px 10px;font-size:14px}
   }
 </style>
 </head>
